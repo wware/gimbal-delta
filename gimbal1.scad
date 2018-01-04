@@ -18,8 +18,8 @@ R4 = R3 + 1;
 R5 = sqrt(pow(R3 + 4, 2) + pow(4.5, 2));
 
 firstHeight = 10;
-secondHeight = 15;
-thirdHeight = 15;
+secondHeight = 6;
+thirdHeight = 16;
 
 module nub() {
     translate([0, 0, -2]) {
@@ -60,26 +60,25 @@ module FirstPiece() {
 module SecondPiece() {
     difference() {
         intersection() {
-            // sphere outside, cylinder inside
             difference() {
                 sphere(d=2*R3);
-                translate([0, 0, -20])
-                    cylinder(d=2*R2, h=40);
+                sphere(d=2*R2);
             }
-            // limit height
-            translate([-20, -20, -.5*secondHeight])
-                cube([40, 40, secondHeight]);
+            // limit height but leave material
+            // around the inner bearings
+            union() {
+                translate([-20, -20, -.5*secondHeight])
+                    cube([40, 40, secondHeight]);
+                for (n = [0 : 2])
+                    rotate(90 * (2*n - 1), [0, 1, 0])
+                        cylinder(h=20, r1=0, r2=14);
+            }
         }
         // cut-outs for two inner bearings
         translate([12, 0, 0])
             rotate([0, 90, 0])
                 translate([0, 0, -45])
                     cylinder(h=60, d=9);
-        // cut-outs to increase range of motion
-        for (n = [0 : 2])
-            rotate(180 * n, [0, 1, 0])
-                translate([-6, -R3-2, 4])
-                    cube([12, 2*R3+4, 8]);
     }
     // nubs for the two outer bearings
     translate([0, R3, 0]) rotate([-90, 0, 0]) nub();
@@ -114,12 +113,18 @@ module Bearing() {
         }
 }
 
-FirstPiece();
-%translate([R1 + 2, 0, 0]) rotate([0, 90, 0]) Bearing();
-%translate([-R1 - 2, 0, 0]) rotate([0, 90, 0]) Bearing();
+module GimbalNut() {
+    FirstPiece();
+    SecondPiece();
+    ThirdPiece();
+}
 
-SecondPiece();
-%translate([0, R3 + 2, 0]) rotate([90, 0, 0]) Bearing();
-%translate([0, -R3 - 2, 0]) rotate([90, 0, 0]) Bearing();
+module GimbalNutBearings() {
+    translate([R1 + 2, 0, 0]) rotate([0, 90, 0]) Bearing();
+    translate([-R1 - 2, 0, 0]) rotate([0, 90, 0]) Bearing();
+    translate([0, R3 + 2, 0]) rotate([90, 0, 0]) Bearing();
+    translate([0, -R3 - 2, 0]) rotate([90, 0, 0]) Bearing();
+}
 
-ThirdPiece();
+GimbalNut();
+// GimbalNutBearings();
