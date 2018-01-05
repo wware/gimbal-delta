@@ -1,10 +1,15 @@
-$fn=30;
+$fn = 30;
+INCH = 25.4;
 
-arm_separation = 40;
+arm_separation = 50;
+
+// http://reprap.org/wiki/NEMA_17_Stepper_motor
+nema17height = 50;    // approximate
+nema17width = 42.3;
 
 module GimbalNut() {
     translate([0, 0, -0.01])
-        cylinder(d=19.2, h=16);
+        cylinder(r=19.2, h=16);
 }
 
 module GimbalNutPair() {
@@ -36,10 +41,15 @@ module DriverModule() {
     GimbalNutPair();
     // plywood
     translate([-50, -25, -5])
-        cube([100, 100, 5]);
+        cube([100, 110, 5]);
     // stepper motor
-    translate([0, 40, 0])
-        cylinder(d=30, h=30);
+    translate([-.5*nema17width,
+              50 - .5*nema17width,
+              -nema17height - 5])
+        cube([nema17width, nema17width, nema17height]);
+    // stepper motor shaft
+    translate([0, 50, 0])
+        cylinder(d=0.4*INCH, h=24);
 }
 
 // there needs to be a frame to hold the 3 driver modules
