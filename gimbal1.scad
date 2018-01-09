@@ -1,32 +1,36 @@
-$fn = 120;
+$fn = 60;
 INCH = 25.4;   // all dimensions are in millimeters
 WRENCH_SIZE = (7/16) * INCH;   // 1/4-20 nut
 
-// Outer radius of the first piece
-R1 = 10;
-
-// Inner radius of the second piece
-R2 = sqrt(pow(R1, 2) + pow(4.5, 2));
-
-// Outer radius of the second piece
-R3 = sqrt(pow(R1 + 4, 2) + pow(4.5, 2));
-
-// Inner radius of the third piece
-R4 = R3 + 1;
-
-// Outer radius of the third piece
-R5 = sqrt(pow(R3 + 4, 2) + pow(4.5, 2));
+// Each gimbal requires four 684ZZ bearings.
+// If you can afford a long lead time, you can find
+// good bulk prices for these on eBay.
+WIGGLE = 0.5;   // half? quarter?
+BEARING_INNER = 4 - WIGGLE;
+BEARING_OUTER = 9 + WIGGLE;
+BEARING_THICKNESS = 4;
 
 firstHeight = 10;
 secondHeight = 6;
 thirdHeight = 16;
 
+R1 = 10;  // Outer radius of the first piece
+R2 = // Inner radius of the second piece
+    sqrt(pow(R1, 2) + pow(.5 * BEARING_OUTER, 2));
+R3 = // Outer radius of the second piece
+    sqrt(pow(R1 + BEARING_THICKNESS, 2) +
+            pow(.5 * BEARING_OUTER, 2));
+R4 = R3 + 1;    // Inner radius of the third piece
+R5 = // Outer radius of the third piece
+    sqrt(pow(R3 + BEARING_THICKNESS, 2) +
+            pow(.5 * BEARING_OUTER, 2));
+
 module nub() {
     translate([0, 0, -2]) {
         // this part fits into the bearing
-        cylinder(d=4.25, h=6);
+        cylinder(d=BEARING_INNER, h=6);
         // this keeps the bearing positioned
-        cylinder(d=5, h=2);
+        cylinder(d=BEARING_INNER+2, h=2);
     }
 }
 
@@ -107,9 +111,11 @@ module ThirdPiece() {
 module Bearing() {
     translate([0, 0, -2])
         difference() {
-            cylinder(h=4, d=9);
+            cylinder(h=BEARING_THICKNESS,
+                        d=BEARING_OUTER);
             translate([0, 0, -0.1])
-                cylinder(h=5, d=4.26);
+                cylinder(h=BEARING_THICKNESS+1,
+                            d=BEARING_INNER);
         }
 }
 
@@ -127,4 +133,4 @@ module GimbalNutBearings() {
 }
 
 GimbalNut();
-// GimbalNutBearings();
+//GimbalNutBearings();
