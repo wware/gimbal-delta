@@ -2,6 +2,10 @@ $fn = 60;
 INCH = 25.4;   // all dimensions are in millimeters
 WRENCH_SIZE = (7/16) * INCH;   // 1/4-20 nut
 
+// The sizes of the nubs and cutouts were stepped by
+// this many millimeters.
+STEPSIZE = 0.05;
+
 // Each gimbal requires four 684ZZ bearings.
 // If you can afford a long lead time, you can find
 // good bulk prices for these on eBay.
@@ -43,19 +47,23 @@ module ThirdPiece() {
                 translate([0, 0, -20])
                     cylinder(d=2*R4, h=40);
             }
-            // translate([0, -20, -20]) cube([40, 40, 40]);
         }
-        // cutouts for the two bearings
-        for (n = [-2 : 2])
-            rotate([0, 0, n * 60])
+        for (n = [-1 : 3]) {
+            dim = 9 + STEPSIZE * n;
+            echo(dim);
+            rotate([0, 0, 4 * 60 + 30 + n * 60])
                 rotate([90, 0, 0])
                     translate([0, 0, 0])
-                        cylinder(h=60, d=9 + 0.25*n);
+                        cylinder(h=60, d=dim);
+        }
     }
-    for (n = [-2 : 2])
-        rotate([0, 0, 180 - 30 + n * 60])
+    for (n = [-1 : 3]) {
+        dim = 4 + STEPSIZE * n;
+        echo(dim);
+        rotate([0, 0, 4 * 60 + 180 + n * 60])
             translate([0, R3+5, 0])
-                rotate([-90, 0, 0]) nub(4 + 0.25*n);
+                rotate([-90, 0, 0]) nub(dim);
+    }
 }
 
 ThirdPiece();
