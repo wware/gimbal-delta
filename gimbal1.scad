@@ -5,9 +5,8 @@ WRENCH_SIZE = (7/16) * INCH;   // 1/4-20 nut
 // Each gimbal requires four 684ZZ bearings.
 // If you can afford a long lead time, you can find
 // good bulk prices for these on eBay.
-WIGGLE = 0.5;   // half? quarter?
-BEARING_INNER = 4 - WIGGLE;
-BEARING_OUTER = 9 + WIGGLE;
+BEARING_INNER = 4;
+BEARING_OUTER = 9 + 0.1;
 BEARING_THICKNESS = 4;
 
 firstHeight = 10;
