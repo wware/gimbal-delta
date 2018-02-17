@@ -1,12 +1,13 @@
 $fn=60;
 
-CONE_DIMENSION=26.5;
-TIMING_BELT_WIDTH=3;
-DIMPLE=1;
-GIMBAL_OUTER_DIAMETER=2*19.266;
-GIMBAL_HEIGHT=16;  // ???
+include <gimbal1.scad>;
+include <beltdrive.scad>;
 
-module gimbal() {
+GIMBAL_OUTER_DIAMETER = 2 * R5;
+GIMBAL_HEIGHT =  thirdHeight;
+RING_OFFSET = 4.7;
+
+module gimbal_outline() {
     translate([0, 0, -.5 * GIMBAL_HEIGHT])
     cylinder(d=GIMBAL_OUTER_DIAMETER, h=GIMBAL_HEIGHT);
 }
@@ -26,10 +27,11 @@ module bearing_608zz() {
 }
 
 module bearings() {
+    // 6.5 = (9 + 4) / 2, from the bearing
     C = 6.5 / sqrt(2);
     for (i = [0 : 2]) {
         a = 0.5 * GIMBAL_OUTER_DIAMETER + C;
-        b = C + 4.5;
+        b = C + RING_OFFSET;
         rotate(30 + 120*i, [0, 0, 1]) {
             translate([a, 0, -b]) rotate(45, [0, 1, 0])
                 bearing_684zz();
@@ -42,7 +44,7 @@ module bearings() {
 module post_pair() {
     C = 6.5 / sqrt(2);
     a = 0.5 * GIMBAL_OUTER_DIAMETER + C;
-    b = C + 4.5;
+    b = C + RING_OFFSET;
     for (j = [0 : 1]) {
         rotate(j*180, [1, 0, 0])
             translate([0, 0, b]) rotate(45, [0, -1, 0]) {
@@ -77,38 +79,30 @@ module cylinder_ring(inner, middle, outer) {
     }
 }
 
-module gimbal_with_rings() {
+module with_rings() {
     D = 4 * sqrt(2);
-    b = 4.5;
-    small = 1;  // don't want the timing belt to bind
-    gimbal();
-    translate([0, 0, b])
+    translate([0, 0, RING_OFFSET])
     cylinder_ring(GIMBAL_OUTER_DIAMETER - 0.1,
         GIMBAL_OUTER_DIAMETER,
         GIMBAL_OUTER_DIAMETER + D);
-    translate([0, 0, 3 + small])
-    difference() {
-        cylinder(d=GIMBAL_OUTER_DIAMETER + D, h = 1.5 - small);
-        translate([0, 0, -0.001])
-        cylinder(d=GIMBAL_OUTER_DIAMETER - 0.001, h = 1.6);
-    }
 
-    translate([0, 0, -b])
+    translate([0, 0, -RING_OFFSET])
     rotate(180, [1, 0, 0])
     cylinder_ring(GIMBAL_OUTER_DIAMETER - 0.1,
         GIMBAL_OUTER_DIAMETER,
         GIMBAL_OUTER_DIAMETER + D);
-    translate([0, 0, -4.5 - 0.001])
-    difference() {
-        cylinder(d=GIMBAL_OUTER_DIAMETER + D, h = 1.5 - small);
-        translate([0, 0, -0.001])
-        cylinder(d=GIMBAL_OUTER_DIAMETER - 0.001, h = 1.6);
-    }
 }
 
 if (1) {
     %bearings();
-    gimbal_with_rings();
+    with_rings();
+    GimbalNut();
+    difference() {
+        beltdrive(62, 9, 0.6);
+        rotate(90, [1, 0, 0])
+            translate([0, 0, -25])
+                cylinder(h=50, d=9);
+    }
     posts();
 } else {
     post_pair();
