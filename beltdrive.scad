@@ -3,22 +3,24 @@ pi = 3.1415926;
 
 pitch = 2;   // 2GT timing belt
 
+a = 0.6;
+
 module tooth(h) {
-    M1 = [[ 1  , 0.5  , 0  , 0   ],
+    M1 = [[ 1  , a , 0  , 0   ],
+           [ 0  , 2 , 0  , 0   ],
+           [ 0  , 0 , 1  , 0   ],
+           [ 0  , 0 , 0  , 1   ] ] ;
+    M2 = [[ 1  , -a , 0  , 0   ],
            [ 0  , 2  , 0  , 0   ],
            [ 0  , 0  , 1  , 0   ],
            [ 0  , 0  , 0  , 1   ] ] ;
-    M2 = [[ 1  , -0.5  , 0  , 0   ],
-           [ 0  , 2  , 0  , 0   ],
-           [ 0  , 0  , 1  , 0   ],
-           [ 0  , 0  , 0  , 1   ] ] ;
-    translate([-0.5, -0.5, -h/2])
+    translate([-1, -0.5, -h/2])
         intersection() {
             multmatrix(M1) {
-                cube(size=[1,1,h]);
+                cube(size=[1.5,1,h]);
             }
             multmatrix(M2) {
-                cube(size=[1,1,h]);
+                cube(size=[1.5,1,h]);
             }
         }
 }
