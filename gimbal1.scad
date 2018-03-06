@@ -1,4 +1,4 @@
-$fn = 60;
+// $fn = 60;
 INCH = 25.4;   // all dimensions are in millimeters
 WRENCH_SIZE = (7/16) * INCH;   // 1/4-20 nut
 
@@ -131,5 +131,5 @@ module GimbalNutBearings() {
     translate([0, -R3 - 2, 0]) rotate([90, 0, 0]) Bearing();
 }
 
-GimbalNut();
+//GimbalNut();
 //GimbalNutBearings();

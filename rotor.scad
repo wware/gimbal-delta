@@ -93,17 +93,31 @@ module with_rings() {
         GIMBAL_OUTER_DIAMETER + D);
 }
 
-if (1) {
-    %bearings();
+module full_rotor() {
     with_rings();
     GimbalNut();
     difference() {
-        beltdrive(62, 9, 0.6);
+        beltdrive(66, 9, 0.6);
         rotate(90, [1, 0, 0])
             translate([0, 0, -25])
                 cylinder(h=50, d=9);
     }
-    posts();
+}
+
+module rotor_cross_section() {
+    intersection() {
+        full_rotor();
+        translate([-500, -500, -1000])
+            cube([1000, 1000, 1000]);
+    }
+}
+
+if (1) {
+    full_rotor();
+    if (0) {
+        %bearings();
+        posts();
+    }
 } else {
     post_pair();
 }
