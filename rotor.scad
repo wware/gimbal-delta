@@ -114,6 +114,20 @@ module rotor_cross_section() {
 
 if (1) {
     full_rotor();
+    if (1) {
+        // supports for printing middle piece
+        // Cura 15.04.2 doesn't do enough support here
+        a = 12;
+        w = 0.5;
+        d = 5;
+        for (j = [0 : 1]) {
+            rotate(j*180, [0, 0, 1])
+                for (k = [0 : 4]) {
+                    translate([12 - w, 2*(k-2), -a])
+                        cube([w, w, a]);
+                }
+        }
+    }
     if (0) {
         %bearings();
         posts();
