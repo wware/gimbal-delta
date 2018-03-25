@@ -41,6 +41,46 @@ module bearings() {
     }
 }
 
+module half_shell() {
+    w = 23.9;
+    intersection() {
+        for (j = [0 : 2]) {
+            rotate((j+.5)*120, [0, 0, 1])
+            translate([w, 0, 0])
+                rotate(45, [0, -1, 0]) {
+                    h1 = 4;
+                    h2 = 2.4;
+                    %bearing_684zz();
+                    translate([0, 0, -2-0.01])
+                        cylinder(d=4, h=4+0.02);
+                    translate([0, 0, -(h2+2)])
+                        cylinder(d=6, h=h2);
+                };
+        };
+    };
+    h = 5;
+    difference() {
+        k = 12;
+        translate([0, 0, -5.1+.01])
+            cylinder(r=w+1+k+h, h=h-0.02);
+        translate([0, 0, -5.1])
+            cylinder(r=w+1+h, h=h);
+        for (i = [ 0 : 2]) {
+            rotate(i * 120, [0, 0, 1])
+                translate([w+10, 0, -100])
+                    // 8-32 machine screw
+                    cylinder(d=0.164*25.4, h=200);
+        }
+    };
+    difference() {
+        translate([0, 0, -5.1+.01])
+            cylinder(r=w+1+h, h=h-0.02);
+        translate([0, 0, -5.1])
+            cylinder(r1=w+1, r2=w+1+h, h=h);
+    };
+};
+
+
 module post_pair() {
     C = 6.5 / sqrt(2);
     a = 0.5 * GIMBAL_OUTER_DIAMETER + C;
@@ -156,7 +196,7 @@ module all_posts() {
     translate([0, gap/2, 0]) mirror([0, 1, 0]) posts();
 };
 
-if (1) {
+if (0) {
     gap = 85;
     %translate([0, -gap/2, 0]) full_rotor();
     %translate([0, -gap/2, 0]) bearings();
@@ -164,5 +204,7 @@ if (1) {
     %translate([0, gap/2, 0]) mirror([0, 1, 0]) bearings();
     all_posts();
 } else {
-    post_pair();
+    // post_pair();
+    half_shell();
+    %translate([0, 0, -9.3]) full_rotor();
 }
