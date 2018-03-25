@@ -44,8 +44,8 @@ module bearings() {
 module half_shell() {
     w = 23.9;
     intersection() {
-        for (j = [0 : 2]) {
-            rotate((j+.5)*120, [0, 0, 1])
+        for (j = [0 : 3]) {
+            rotate((j+.5)*90, [0, 0, 1])
             translate([w, 0, 0])
                 rotate(45, [0, -1, 0]) {
                     h1 = 4;
@@ -65,8 +65,8 @@ module half_shell() {
             cylinder(r=w+1+k+h, h=h-0.02);
         translate([0, 0, -5.1])
             cylinder(r=w+1+h, h=h);
-        for (i = [ 0 : 2]) {
-            rotate(i * 120, [0, 0, 1])
+        for (i = [0 : 3]) {
+            rotate(i * 90, [0, 0, 1])
                 translate([w+10, 0, -100])
                     // 8-32 machine screw
                     cylinder(d=0.164*25.4, h=200);
