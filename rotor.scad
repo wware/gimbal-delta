@@ -45,7 +45,7 @@ module half_shell() {
     w = 23.9;
     intersection() {
         for (j = [0 : 3]) {
-            rotate((j+.5)*90, [0, 0, 1])
+            rotate((j+.25)*90, [0, 0, 1])
             translate([w, 0, 0])
                 rotate(45, [0, -1, 0]) {
                     h1 = 4;
@@ -80,6 +80,15 @@ module half_shell() {
     };
 };
 
+
+module post() {
+    extra = 2;
+    translate([0, 0, -(2+extra)]) {
+        cylinder(d=4, h=4+extra);
+        cylinder(d=5, h=extra);
+    };
+    %bearing_684zz();
+};
 
 module post_pair() {
     C = 6.5 / sqrt(2);
@@ -171,11 +180,33 @@ module with_rings() {
         GIMBAL_OUTER_DIAMETER + D);
 }
 
+module ring_with_posts(offset) {
+    width = 40;
+    thickness = 2;
+    height = 6.5;
+    translate([0, 0, -2])
+    difference() {
+        cylinder(d=width+2*thickness, h=height);
+        translate([0, 0, -0.01])
+        cylinder(d=width, h=height+0.02);
+    };
+    for (i = [0:2]) {
+        rotate((i+offset)*120, [0,0,1])
+            translate([width/2+4.5, 0, height-4])
+            rotate(90, [0,1,0]) post();
+    };
+};
+
 module full_rotor() {
-    with_rings();
+    translate([0, 0, 6.5])
+        ring_with_posts(0);
+    translate([0, 0, -6.5])
+        mirror([0,0,1])
+        ring_with_posts(1/2);
     GimbalNut();
     difference() {
-        beltdrive(66, 9, 0.6);
+        translate([0, 0, -0.05])
+        beltdrive(66, 9.1, 0.6);
         rotate(90, [1, 0, 0])
             translate([0, 0, -25])
                 cylinder(h=50, d=9);
@@ -203,8 +234,19 @@ if (0) {
     %translate([0, gap/2, 0]) full_rotor();
     %translate([0, gap/2, 0]) mirror([0, 1, 0]) bearings();
     all_posts();
-} else {
+}
+if (0) {
     // post_pair();
     half_shell();
     %translate([0, 0, -9.3]) full_rotor();
+    translate([0, 0, -18.55])
+        rotate(180, [0, 1, 0])
+            half_shell();
 }
+if (1) {
+    p = 25;
+    full_rotor();
+    %cylinder(r1=0, r2=p, h=p);
+    %rotate(180, [1,0,0]) cylinder(r1=0, r2=p, h=p);
+}
+//post();
