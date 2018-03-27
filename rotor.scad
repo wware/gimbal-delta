@@ -181,8 +181,8 @@ module with_rings() {
 }
 
 module ring_with_posts(offset) {
-    width = 40;
-    thickness = 2;
+    width = 36;
+    thickness = 4;
     height = 6.5;
     translate([0, 0, -2])
     difference() {
@@ -192,24 +192,31 @@ module ring_with_posts(offset) {
     };
     for (i = [0:2]) {
         rotate((i+offset)*120, [0,0,1])
-            translate([width/2+4.5, 0, height-4])
+            translate([width/2+thickness+2.5, 0, height-4])
             rotate(90, [0,1,0]) post();
     };
 };
 
 module full_rotor() {
-    translate([0, 0, 6.5])
-        ring_with_posts(0);
-    translate([0, 0, -6.5])
-        mirror([0,0,1])
-        ring_with_posts(1/2);
+    a = 7.5;
+    intersection() {
+        union() {
+            translate([0, 0, a])
+                ring_with_posts(0);
+            translate([0, 0, -a])
+                mirror([0,0,1])
+                ring_with_posts(1/2);
+        };
+        translate([0, 0, -12])
+            cylinder(h=24, d=100);
+    };
     GimbalNut();
     difference() {
         translate([0, 0, -0.05])
-        beltdrive(66, 9.1, 0.6);
+        beltdrive(66, 12.1, 0.6);
         rotate(90, [1, 0, 0])
             translate([0, 0, -25])
-                cylinder(h=50, d=9);
+                cylinder(h=50, d=10);
     }
 }
 
@@ -225,6 +232,15 @@ module all_posts() {
     gap = 85;
     translate([0, -gap/2, 0]) posts();
     translate([0, gap/2, 0]) mirror([0, 1, 0]) posts();
+};
+
+module bearing_tool() {
+    W = 20;
+    L = 30;
+    gap = 3;
+    cylinder(h=5, d=W);
+    cylinder(h=L+2, d=4);
+    cylinder(h=L, d=8);
 };
 
 if (0) {
@@ -246,7 +262,13 @@ if (0) {
 if (1) {
     p = 25;
     full_rotor();
-    %cylinder(r1=0, r2=p, h=p);
-    %rotate(180, [1,0,0]) cylinder(r1=0, r2=p, h=p);
+    if (0) {
+        %cylinder(r1=0, r2=p, h=p);
+        %rotate(180, [1,0,0]) cylinder(r1=0, r2=p, h=p);
+    }
+    translate([30, 16, -12])
+        bearing_tool();
+    translate([-30, 16, -12])
+        bearing_tool();
 }
 //post();
