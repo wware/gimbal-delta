@@ -349,8 +349,4 @@ if (0) {
     };
 }
 
-h = 55;
-translate([0, h, 0])
-baseplate();
-translate([0, -h, 0])
 baseplate();
