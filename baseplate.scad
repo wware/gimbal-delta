@@ -275,12 +275,12 @@ if (0) {
 
 module track() {
     difference() {
-        translate([0, 0, -1]) cylinder(h=3, r=29.5);
+        translate([0, 0, -1]) cylinder(h=3, r=31);
         translate([0, 0, -1.1]) cylinder(h=3.2, r=27);
     };
     difference() {
         translate([0, 0, -1]) cylinder(h=3, r=22.4);
-        translate([0, 0, -1.1]) cylinder(h=3.2, r=20);
+        translate([0, 0, -1.1]) cylinder(h=3.2, r=18);
     };
 };
 
@@ -294,9 +294,9 @@ module baseplate() {
         translate([-100, -50, -3])
             cube([200, 100, 3]);
         translate([-a, 0, -5])
-            cylinder(r=20, h=10);
+            cylinder(r=18, h=10);
         translate([a, 0, -5])
-            cylinder(r=20, h=10);
+            cylinder(r=18, h=10);
         for (i = [0 : 1]) {
             for (j = [0 : 1]) {
                 translate([(2*i-1) * u, (2*j-1) * v, 0]) {
