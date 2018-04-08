@@ -301,14 +301,14 @@ module baseplate() {
             for (j = [0 : 1]) {
                 translate([(2*i-1) * u, (2*j-1) * v, 0]) {
                     translate([0, 0, -5])
-                        cylinder(r=6.35, h=10);
+                        cylinder(d=6.35, h=10);
                 };
             };
         };
         for (j = [0 : 1]) {
             translate([0, (2*j-1) * v, 0]) {
                 translate([0, 0, -5])
-                    cylinder(r=6.35, h=10);
+                    cylinder(d=6.35, h=10);
             };
         };
     };
@@ -316,9 +316,9 @@ module baseplate() {
         for (j = [0 : 1]) {
             translate([(2*i-1) * u, (2*j-1) * v, 0]) {
                 difference() {
-                    cylinder(r=9, h=15);
+                    cylinder(d=12, h=15);
                     translate([0, 0, -0.1])
-                        cylinder(r=6.35, h=15.2);
+                        cylinder(d=6.35, h=15.2);
                 };
             };
         };
@@ -326,9 +326,9 @@ module baseplate() {
     for (j = [0 : 1]) {
         translate([0, (2*j-1) * v, 0]) {
             difference() {
-                cylinder(r=9, h=15);
+                cylinder(d=12, h=15);
                 translate([0, 0, -0.1])
-                    cylinder(r=6.35, h=15.2);
+                    cylinder(d=6.35, h=15.2);
             };
         };
     };
