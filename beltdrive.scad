@@ -3,7 +3,7 @@ pi = 3.1415926;
 
 pitch = 2;   // 2GT timing belt
 
-a = 0.6;
+a = 0.4;
 
 module tooth(h) {
     M1 = [[ 1  , a , 0  , 0   ],
@@ -43,5 +43,11 @@ module beltdrive(N, h, w) {
     }
 }
 
+/* To avoid a "wall too thin" warning from Shapeways, you need the
+   outer edge of the tooth to be at least 0.7 mm thick. This requires
+   dropping the value of a to 0.4.
+ */
+
 // beltdrive(62, 3, 0.6);
 // tooth(3);
+// translate([-0.6, 1.5, 0]) cube([0.7, 1, 1]);

@@ -196,8 +196,8 @@ module full_rotor() {
     a = 7.5;
     translate([0, 0, a])  ring();
     translate([0, 0, -a]) ring();
-    %GimbalNut();
-    %difference() {
+    GimbalNut();
+    difference() {
         translate([0, 0, -0.05])
         beltdrive(66, 12.1, 0.6);
         rotate(90, [1, 0, 0])
