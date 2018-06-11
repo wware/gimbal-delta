@@ -180,10 +180,8 @@ module with_rings() {
         GIMBAL_OUTER_DIAMETER + D);
 }
 
-module ring(offset) {
+module ring(thickness, height) {
     width = 36;
-    thickness = 4;
-    height = 4;
     translate([0, 0, -2])
         difference() {
             cylinder(d=width+2*thickness, h=height);
@@ -193,19 +191,16 @@ module ring(offset) {
 };
 
 module full_rotor() {
-    // 2 for the ring
-    translate([0, 0, 9.5]) {
-        a = 7.5;
-        translate([0, 0, a])  ring();
-        translate([0, 0, -a]) ring();
-        GimbalNut();
-        difference() {
-            translate([0, 0, -0.05])
-            beltdrive(66, 12.1, 0.6);
-            rotate(90, [1, 0, 0])
-                translate([0, 0, -25])
-                    cylinder(h=50, d=10);
-        }
+    a = 7.5;
+    translate([0, 0, a])  ring(4, 4);
+    translate([0, 0, -a]) ring(4, 4);
+    GimbalNut();
+    difference() {
+        translate([0, 0, -0.05])
+        beltdrive(66, 12.1, 0.6);
+        rotate(90, [1, 0, 0])
+            translate([0, 0, -25])
+                cylinder(h=50, d=10);
     }
 }
 
@@ -232,34 +227,23 @@ module bearing_tool() {
     cylinder(h=L, d=8);
 };
 
-if (0) {
-    gap = 85;
-    %translate([0, -gap/2, 0]) full_rotor();
-    %translate([0, -gap/2, 0]) bearings();
-    %translate([0, gap/2, 0]) full_rotor();
-    %translate([0, gap/2, 0]) mirror([0, 1, 0]) bearings();
-    all_posts();
-}
-if (0) {
-    // post_pair();
-    half_shell();
-    %translate([0, 0, -9.3]) full_rotor();
-    translate([0, 0, -18.55])
-        rotate(180, [0, 1, 0])
-            half_shell();
-}
-if (1) {
-    p = 25;
-    full_rotor();
-    if (0) {
-        %cylinder(r1=0, r2=p, h=p);
-        %rotate(180, [1,0,0]) cylinder(r1=0, r2=p, h=p);
+//full_rotor();
+
+
+
+module fixed_gimbal() {
+    a = 12;
+    translate([0, 0, -a]) ring(5, 9);
+    GimbalNut();
+    for (j = [0 : 4]) {
+        rotate(j* 90, [0, 0, 1])
+            difference() {
+                translate([21, -7, -14])
+                    cube([18, 14, 5]);
+                translate([32, 0, -14.1])
+                    cylinder(d=6.35, h=6);
+        }
     }
 }
-if (0) {
-    translate([30, 16, -12])
-        bearing_tool();
-    translate([-30, 16, -12])
-        bearing_tool();
-}
-//post();
+
+fixed_gimbal();
