@@ -4,7 +4,7 @@ include <gimbal1.scad>;
 include <beltdrive.scad>;
 
 GIMBAL_OUTER_DIAMETER = 2 * R5;
-GIMBAL_HEIGHT =  thirdHeight;
+GIMBAL_HEIGHT = thirdHeight;
 RING_OFFSET = 4.7;
 
 module gimbal_outline() {
@@ -185,8 +185,8 @@ module ring(thickness, height) {
     translate([0, 0, -2])
         difference() {
             cylinder(d=width+2*thickness, h=height);
-            translate([0, 0, -0.01])
-                cylinder(d=width, h=height+0.02);
+            translate([0, 0, -1])
+                cylinder(d=width, h=height+2);
         };
 };
 
@@ -227,10 +227,6 @@ module bearing_tool() {
     cylinder(h=L, d=8);
 };
 
-//full_rotor();
-
-
-
 module fixed_gimbal() {
     a = 12;
     translate([0, 0, -a]) ring(5, 9);
@@ -246,4 +242,71 @@ module fixed_gimbal() {
     }
 }
 
-fixed_gimbal();
+susan_h = 6;
+susan_r = 51;
+susan_br = 46;    // distance of mounting bolt from center
+susan_bd = 4.2;   // diameter of mounting bolt
+
+module lazy_susan() {
+    translate([0, 0, 0.5 * GIMBAL_HEIGHT + susan_h - 0.01])
+        full_rotor();
+    difference() {
+        cylinder(r=susan_r, h=susan_h);
+        translate([0, 0, -1])
+            cylinder(r=16, h=susan_h+2);
+        for (i = [0 : 3])
+            rotate(90*i, [0, 0, 1])
+                translate([susan_br, 0, -0.01])
+                    cylinder(h=susan_h+1, d=susan_bd);
+    }
+}
+
+module driver_module() {
+    // http://reprap.org/wiki/NEMA_17_Stepper_motor
+    nema17height = 50;    // approximate
+    nema17width = 42.3;
+    translate([40, -55, 0]) {
+        // stepper motor
+        translate([-.5*nema17width,
+                  -.5*nema17width,
+                  -nema17height - 5])
+            cube([nema17width, nema17width, nema17height]);
+        // stepper motor shaft
+        cylinder(d=0.4*INCH, h=24);
+    }
+
+    for (i = [0 : 1])
+        translate([(2*i-1)*(susan_r+5), 0.5*susan_r, -0.01])
+            lazy_susan();
+
+    // plywood mount for these things
+    w = 230;
+    d = 160;
+    h = 6;
+    difference() {
+        translate([-w/2, -d/2, -h])
+            cube([w, d, h]);
+        translate([susan_r+5, 0.5*susan_r, -(h+1)])
+            cylinder(h=h+2, d=45);
+        translate([-(susan_r+5), 0.5*susan_r, -(h+1)])
+            cylinder(h=h+2, d=45);
+        for (j = [0 : 1])
+            translate([(2*j-1)*(susan_r+5), 0.5*susan_r, 0])
+                for (i = [0 : 3])
+                    rotate(90*i, [0, 0, 1])
+                        translate([susan_br, 0, -(h+1)])
+                            cylinder(h=h+2, d=susan_bd);
+    }
+
+    translate([-60, -50, 0])
+        rotate(30, [0, 0, 1]) {
+            translate([-5, -10, 0])
+                cube([10, 20, 25]);
+            translate([25, 0, 3])
+                cylinder(h=20, d=12);
+        }
+}
+
+//full_rotor();
+//fixed_gimbal();
+driver_module();
