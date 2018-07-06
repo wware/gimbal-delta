@@ -261,10 +261,29 @@ module lazy_susan() {
     }
 }
 
+module tensioner_belt_follower() {
+    beltdrive(24, 18, 1.6);
+    difference() {
+        union() {
+            translate([0, 0, -9])
+                cylinder(d=20, h=4);
+            translate([0, 0, 5])
+                cylinder(d=20, h=4);
+        }
+        translate([0, 0, -11])
+            cylinder(d=12, h=22);
+    }
+}
+
 module driver_module() {
+    red = [1, 0, 0];      // tensioner teeth
+    green = [0, 1, 0];    // 680zz bearings for tensioner
+    blue = [0, 0, 1];
+
     // http://reprap.org/wiki/NEMA_17_Stepper_motor
     nema17height = 50;    // approximate
     nema17width = 42.3;
+    nema17shaft = (1/4)*INCH;
     translate([40, -55, 0]) {
         // stepper motor
         translate([-.5*nema17width,
@@ -272,15 +291,17 @@ module driver_module() {
                   -nema17height - 5])
             cube([nema17width, nema17width, nema17height]);
         // stepper motor shaft
-        cylinder(d=0.4*INCH, h=24);
+        cylinder(d=nema17shaft, h=24);
     }
 
     for (i = [0 : 1])
-        translate([(2*i-1)*(susan_r+5), 0.5*susan_r, -0.01])
+        translate([(2*i-1)*(susan_r+5),
+                   0.5*susan_r,
+                   -0.01])
             lazy_susan();
 
     // plywood mount for these things
-    w = 230;
+    w = 250;
     d = 160;
     h = 6;
     difference() {
@@ -298,14 +319,30 @@ module driver_module() {
                             cylinder(h=h+2, d=susan_bd);
     }
 
-    translate([-60, -50, 0])
-        rotate(30, [0, 0, 1]) {
-            translate([-5, -10, 0])
-                cube([10, 20, 25]);
-            translate([25, 0, 3])
-                cylinder(h=20, d=12);
+    translate([-100, -50, 0]) {
+        translate([-20, -10, 0])
+            cube([20, 20, 25]);
+        translate([25, 0, 14]) {
+            color(red)
+                tensioner_belt_follower();
+            color(green)
+                // bearings for tensioner belt follower
+                translate([0, 0, -9])
+                    difference() {
+                        cylinder(h=18, d=9);
+                        translate([0, 0, -1])
+                            cylinder(h=20, d=4);
+                    }
         }
+    }
 }
+
+/*
+    A #8 machine screw has an outer diameter of 5/64 inch
+    or 4 mm. That should just fit inside a 680ZZ bearing, so
+    use that for the tensioner. Then you need a square U-piece
+    that pulls on the tensioner toothed thing.
+*/
 
 //full_rotor();
 //fixed_gimbal();
