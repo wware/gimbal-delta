@@ -262,16 +262,34 @@ module lazy_susan() {
 }
 
 module tensioner_belt_follower() {
-    beltdrive(24, 18, 1.6);
     difference() {
         union() {
-            translate([0, 0, -9])
-                cylinder(d=20, h=4);
-            translate([0, 0, 5])
-                cylinder(d=20, h=4);
+            beltdrive(24, 18, 1.6);
+            difference() {
+                union() {
+                    translate([0, 0, -9])
+                        cylinder(d=20, h=4);
+                    translate([0, 0, 5])
+                        cylinder(d=20, h=4);
+                }
+                translate([0, 0, -11])
+                    cylinder(d=12, h=22);
+            }
         }
-        translate([0, 0, -11])
-            cylinder(d=12, h=22);
+        // make sure we can get the bearings in there
+        translate([0, 0, -10])
+            cylinder(d=9.2, h=20);
+    }
+}
+
+module tensioner_support() {
+    difference() {
+        union() {
+            cylinder(d=5.5, h=5);
+            cylinder(d1=35, d2=15, h=4);
+        };
+        translate([0, 0, -8])
+            cylinder(h=33, d=4.2);
     }
 }
 
@@ -320,30 +338,47 @@ module driver_module() {
     }
 
     translate([-100, -50, 0]) {
-        translate([-20, -10, 0])
-            cube([20, 20, 25]);
-        translate([25, 0, 14]) {
-            color(red)
-                tensioner_belt_follower();
-            color(green)
-                // bearings for tensioner belt follower
-                translate([0, 0, -9])
-                    difference() {
-                        cylinder(h=18, d=9);
-                        translate([0, 0, -1])
-                            cylinder(h=20, d=4);
-                    }
+        translate([25, 0, 0]) {
+            translate([0, 0, 14]) {
+                color(red)
+                    tensioner_belt_follower();
+                color(green)
+                    // bearings for tensioner belt follower
+                    translate([0, 0, -9])
+                        difference() {
+                            cylinder(h=18, d=9);
+                            translate([0, 0, -1])
+                                cylinder(h=20, d=4);
+                        }
+            }
+            color([0.5, 0.7, 0.4])
+                tensioner_support();
+            // number 8 machine screw
+            color(blue) {
+                translate([0, 0, -8])
+                    cylinder(h=33, d=4.064);
+            }
         }
     }
 }
 
 /*
-    A #8 machine screw has an outer diameter of 5/64 inch
-    or 4 mm. That should just fit inside a 680ZZ bearing, so
+    A #8 machine screw has an outer diameter of 4.064mm.
+    That should just fit inside a 680ZZ bearing, so
     use that for the tensioner. Then you need a square U-piece
     that pulls on the tensioner toothed thing.
 */
 
+module tensioner_pieces() {
+    for (j = [0 : 2]) {
+        translate([0, j * 38, 0]) {
+            translate([30, 0, 9]) tensioner_belt_follower();
+            tensioner_support();
+        }
+    }
+}
+
 //full_rotor();
 //fixed_gimbal();
-driver_module();
+//driver_module();
+tensioner_pieces();
