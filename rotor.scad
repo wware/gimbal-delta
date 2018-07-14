@@ -265,31 +265,18 @@ module tensioner_belt_follower() {
     difference() {
         union() {
             beltdrive(24, 18, 1.6);
-            difference() {
-                union() {
-                    translate([0, 0, -9])
-                        cylinder(d=20, h=4);
-                    translate([0, 0, 5])
-                        cylinder(d=20, h=4);
-                }
-                translate([0, 0, -11])
-                    cylinder(d=12, h=22);
-            }
+            translate([0, 0, -9])
+                cylinder(d=20, h=4);
+            translate([0, 0, 5])
+                cylinder(d=20, h=4);
         }
-        // make sure we can get the bearings in there
         translate([0, 0, -10])
-            cylinder(d=9.2, h=20);
-    }
-}
-
-module tensioner_support() {
-    difference() {
-        union() {
-            cylinder(d=5.5, h=5);
-            cylinder(d1=35, d2=15, h=4);
-        };
-        translate([0, 0, -8])
-            cylinder(h=33, d=4.2);
+            cylinder(d=6, h=20);
+        // make sure we can get the bearings in there
+        translate([0, 0, -10.01])
+            cylinder(d=9.2, h=4);
+        translate([0, 0, 10.01-4])
+            cylinder(d=9.2, h=4);
     }
 }
 
@@ -363,17 +350,30 @@ module driver_module() {
 }
 
 /*
-    A #8 machine screw has an outer diameter of 4.064mm.
-    That should just fit inside a 680ZZ bearing, so
-    use that for the tensioner. Then you need a square U-piece
-    that pulls on the tensioner toothed thing.
+    A #6 machine screw has an outer diameter of 3.3mm.
+    Create a cuff to fit inside a 680ZZ bearing, to keep it
+    concentric and act like a small washer.
+    Then you need a square U-piece that pulls on the
+    tensioner toothed thing. The U-piece can be metal.
 */
+
+module tensioner_spacer() {
+    difference() {
+        union() {
+            cylinder(d=4, h=2);
+            cylinder(d=6, h=0.5);
+        }
+        translate([0, 0, -1])
+            cylinder(d=3.3, h=40);
+    }
+}
 
 module tensioner_pieces() {
     for (j = [0 : 2]) {
-        translate([0, j * 38, 0]) {
-            translate([30, 0, 9]) tensioner_belt_follower();
-            tensioner_support();
+        translate([0, j * 22, 0]) {
+            translate([15, 0, 9]) tensioner_belt_follower();
+            translate([0, -5, 0]) tensioner_spacer();
+            translate([0, 5, 0]) tensioner_spacer();
         }
     }
 }
@@ -381,4 +381,5 @@ module tensioner_pieces() {
 //full_rotor();
 //fixed_gimbal();
 //driver_module();
+//tensioner_belt_follower();
 tensioner_pieces();
