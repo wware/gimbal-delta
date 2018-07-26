@@ -350,14 +350,7 @@ module plywood_driver_base() {
         gimbal_pair(1);
         // stepper motor holes
         translate([40, -55, 0]) {
-            // screw holes
-            for (i = [0 : 1])
-                for (j = [0 : 1])
-                    translate([(2*i-1) * nema17screwoffset, (2*j-1) * nema17screwoffset, -10])
-                        cylinder(d=nema17screwdiameter, h=15);
-            // shaft including ring around shaft
-            translate([0, 0, -10])
-                cylinder(d=nema17shaftring, h=15);
+            nmea17stepper();
         }
         // screw mounts for tensioner anchor block
         translate([-110, -50, -10]) cylinder(d=4, h=15);
@@ -365,18 +358,29 @@ module plywood_driver_base() {
     }
 }
 
-module driver_module() {
-    color(blue) {
-        translate([40, -55, 0]) {
-            // stepper motor
-            translate([-.5*nema17width,
-                      -.5*nema17width,
-                      -nema17height - 5])
-                cube([nema17width, nema17width, nema17height]);
-            // stepper motor shaft
-            cylinder(d=nema17shaft, h=24);
-        }
+module nmea17stepper(option) {
+    if (option) {
+        // stepper motor
+        translate([-.5*nema17width, -.5*nema17width, -nema17height - 5])
+            cube([nema17width, nema17width, nema17height]);
+        // stepper motor shaft
+        cylinder(d=nema17shaft, h=24);
+    } else {
+        // screw holes
+        for (i = [0 : 1])
+            for (j = [0 : 1])
+                translate([(2*i-1) * nema17screwoffset, (2*j-1) * nema17screwoffset, -10])
+                    cylinder(d=nema17screwdiameter, h=30);
+        // shaft including ring around shaft
+        translate([0, 0, -10])
+            cylinder(d=nema17shaftring, h=30);
     }
+}
+
+module driver_module() {
+    color(blue)
+        translate([40, -55, 0])
+            nmea17stepper(1);
 
     color(red)
         gimbal_pair(3);
@@ -388,21 +392,17 @@ module driver_module() {
         translate([-120, -65, 0])
             cube([50, 30, 30]);
 
-    translate([-50, -50, 0]) {
-        translate([25, 0, 0]) {
-            translate([0, 0, 14]) {
-                color(red)
-                    tensioner_belt_follower();
-                color(green)
-                    // bearings for tensioner belt follower
-                    translate([0, 0, -9])
-                        difference() {
-                            cylinder(h=18, d=9);
-                            translate([0, 0, -1])
-                                cylinder(h=20, d=4);
-                        }
-            }
-        }
+    translate([-25, -50, 14]) {
+        color(red)
+            tensioner_belt_follower();
+        color(green)
+            // bearings for tensioner belt follower
+            translate([0, 0, -9])
+                difference() {
+                    cylinder(h=18, d=9);
+                    translate([0, 0, -1])
+                        cylinder(h=20, d=4);
+                }
     }
 }
 
@@ -450,13 +450,13 @@ module check_driver_module_alignment() {
 
 //full_rotor();
 //fixed_gimbal();
-//driver_module();
+driver_module();
 //plywood_driver_base();
 //tensioner_belt_follower();
 //tensioner_pieces();
 //tool_platform(1);
 
-if (1) {
+if (0) {
     plywood_driver_base();
     translate([0, -275, 0])
         tool_platform();
