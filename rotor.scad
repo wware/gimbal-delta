@@ -259,16 +259,21 @@ module check_driver_module_alignment() {
         plywood_driver_base();
 }
 
+module plywood_parts() {
+    for (j = [0 : 2])
+        translate([0, 202*j, 3])
+            plywood_driver_base();
+    translate([0, -275, -3])
+        tool_platform();
+}
+
 //full_rotor();
 //fixed_gimbal();
-driver_module();
+//driver_module();
 //plywood_driver_base();
 //tensioner_belt_follower();
 //tensioner_pieces();
 //tool_platform(1);
 
-if (0) {
-    plywood_driver_base();
-    translate([0, -275, 0])
-        tool_platform();
-}
+//plywood_parts();
+projection(cut=true) plywood_parts();
