@@ -1,3 +1,5 @@
+include <nema17.scad>;
+
 $fn=60;
 INCH = 25.4;   // all dimensions are in millimeters
 WRENCH_SIZE = (7/16) * INCH;   // 1/4-20 nut
@@ -270,14 +272,6 @@ module tensioner_belt_follower() {
     }
 }
 
-// http://reprap.org/wiki/NEMA_17_Stepper_motor
-nema17height = 50;    // approximate
-nema17width = 42.3;
-nema17shaft = 5;
-nema17shaftring = 23;
-nema17screwoffset = 16.5;
-nema17screwdiameter = 3;  // M3 screw
-
 module gimbal_pair(option) {
     if (option == 0) {    // holes for fixed gimbals
         for (j = [0 : 1])
@@ -333,7 +327,7 @@ module plywood_driver_base() {
         gimbal_pair(1);
         // stepper motor holes
         translate([40, -55, 0]) {
-            nmea17stepper();
+            nema17stepper();
         }
         // screw mounts for tensioner anchor block
         translate([-110, -50, -10]) cylinder(d=4, h=15);
@@ -341,29 +335,10 @@ module plywood_driver_base() {
     }
 }
 
-module nmea17stepper(option) {
-    if (option) {
-        // stepper motor
-        translate([-.5*nema17width, -.5*nema17width, -nema17height - 5])
-            cube([nema17width, nema17width, nema17height]);
-        // stepper motor shaft
-        cylinder(d=nema17shaft, h=24);
-    } else {
-        // screw holes
-        for (i = [0 : 1])
-            for (j = [0 : 1])
-                translate([(2*i-1) * nema17screwoffset, (2*j-1) * nema17screwoffset, -10])
-                    cylinder(d=nema17screwdiameter, h=30);
-        // shaft including ring around shaft
-        translate([0, 0, -10])
-            cylinder(d=nema17shaftring, h=30);
-    }
-}
-
 module driver_module() {
     color(blue)
         translate([40, -55, 0])
-            nmea17stepper(1);
+            nema17stepper(1);
 
     color(red)
         gimbal_pair(3);
@@ -439,13 +414,13 @@ module plywood_parts() {
         tool_platform();
 }
 
-//full_rotor();
 //fixed_gimbal();
-//driver_module();
+//lazy_susan();
+driver_module();
 //plywood_driver_base();
 //tensioner_belt_follower();
 //tensioner_pieces();
 //tool_platform(1);
 
 //plywood_parts();
-projection(cut=true) plywood_parts();
+//projection(cut=true) plywood_parts();
