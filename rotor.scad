@@ -1,3 +1,4 @@
+
 $fn=60;
 
 include <gimbal1.scad>;
@@ -99,11 +100,12 @@ module tensioner_belt_follower() {
 }
 
 // http://reprap.org/wiki/NEMA_17_Stepper_motor
+// The ones I actually got were more like https://www.adafruit.com/product/324
 nema17height = 50;    // approximate
 nema17width = 42.3;
 nema17shaft = 5;
-nema17shaftring = 23;
-nema17screwoffset = 16.5;
+nema17shaftring = 25;
+nema17screwoffset = 15.5;
 nema17screwdiameter = 3;  // M3 screw
 
 module gimbal_pair(option) {
@@ -116,6 +118,9 @@ module gimbal_pair(option) {
                         rotate(90*i, [0, 0, 1])
                             translate([32, 0, -10])
                                 cylinder(h=30, d=fixed_screw_diameter);
+                // hole in middle
+                translate([0, 0, -10])
+                    cylinder(h=30, d=40);
             }
     }
     else if (option == 1) {    // holes for belt-driven gimbals
@@ -150,9 +155,8 @@ module gimbal_pair(option) {
 }
 
 module plywood_driver_base() {
-    w = 250;
-    w = 350;
-    d = 200;
+    w = 750;
+    d = 300;
     h = 6;
     difference() {
         translate([-w/2, -d/2, -h])
@@ -164,8 +168,21 @@ module plywood_driver_base() {
             nmea17stepper();
         }
         // screw mounts for tensioner anchor block
-        translate([-110, -50, -10]) cylinder(d=4, h=15);
-        translate([-80, -50, -10]) cylinder(d=4, h=15);
+        translate([-130, -90, -10]) cylinder(d=4, h=15);
+        translate([-100, -70, -10]) cylinder(d=4, h=15);
+        // angle cut-outs for the ends, to line up with the 2x4s
+        translate([w/2 - 100*sqrt(3), -d/2, -10])
+            rotate(-30, [0, 0, 1])
+                cube([1000, 1000, 30]);
+        translate([-w/2 + 100*sqrt(3), -d/2, -10])
+            rotate(30, [0, 0, 1])
+                translate([-1000, 0, 0])
+                    cube([1000, 1000, 30]);
+        // carriage bolts to connect to 2x4s
+        translate([-310, 110, -10]) cylinder(d=6.35, h=30);
+        translate([310, 110, -10]) cylinder(d=6.35, h=30);
+        translate([-170, -80, -10]) cylinder(d=6.35, h=30);
+        translate([170, -80, -10]) cylinder(d=6.35, h=30);
     }
 }
 
@@ -219,8 +236,8 @@ module driver_module() {
 
 module tool_platform(gimbals) {
     h = 6;
-    r = 200;
-    tool_hole_diameter = 100;
+    r = 220;
+    tool_hole_diameter = 6 * 25.4;
     screw_mount_spacing = tool_hole_diameter/2 + 20;
     screw_mount_diameter = 6.35;
     difference() {
@@ -261,10 +278,31 @@ module check_driver_module_alignment() {
 
 module plywood_parts() {
     for (j = [0 : 2])
-        translate([0, 202*j, 3])
+        translate([0, 310*j, 3])
             plywood_driver_base();
-    translate([0, -275, -3])
+    translate([0, -350, -3])
         tool_platform();
+    if (0) {
+        L = 24 * 25.4;
+        W = 48 * 25.4;
+        xofs = -225;
+        yofs = 200;
+        %translate([xofs - W/2, yofs - L/2, 0])
+            cube([W, L, 5]);
+    }
+}
+
+module three_drivers() {
+    L = 750;
+    for (i = [0 : 2])
+        rotate((60+120*i), [0, 0, 1])
+            translate([0, -400, 0])
+                //driver_module();
+                plywood_driver_base();
+        %for (i = [0 : 2])
+            rotate(120*i, [0, 0, 1])
+                translate([-L/2, -450, -6 - 2*25.4])
+                    cube([L, 4*25.4, 2*25.4]);
 }
 
 //full_rotor();
@@ -274,6 +312,10 @@ module plywood_parts() {
 //tensioner_belt_follower();
 //tensioner_pieces();
 //tool_platform(1);
+//three_drivers();
 
 //plywood_parts();
 projection(cut=true) plywood_parts();
+
+// https://gist.github.com/wware/875998248c23ebd86668fd5c354ec737
+// I wish this were a real programming language.
