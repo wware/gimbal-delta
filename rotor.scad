@@ -297,17 +297,22 @@ module three_drivers() {
     gap = 7*25.4;
     for (i = [0 : 2])
         rotate((60+120*i), [0, 0, 1])
-            // 300 = height of plywood_driver_base
             translate([0, -L/sqrt(3) + 400, 0])
-                //driver_module();
                 plywood_driver_base();
         %for (i = [0 : 2])
             rotate(120*i, [0, 0, 1])
-                /*translate([-L/2, -450, -6 - 2*25.4])
-                    cube([L, 4*25.4, 2*25.4]);*/
-                translate([-L/2+gap/2, -0.5*L/sqrt(3)-50, -6 - 2*25.4])
+                translate([-L/2+gap/2,
+                           -0.5*L/sqrt(3)-50,
+                           -6 - 2*25.4])
                     cube([L-gap, 4*25.4, 2*25.4]);
 }
+
+module whole_thing() {
+    translate([0, 0, 30*25.4])
+        three_drivers();
+    tool_platform(0);
+}
+
 
 //full_rotor();
 //fixed_gimbal();
@@ -316,7 +321,8 @@ module three_drivers() {
 //tensioner_belt_follower();
 //tensioner_pieces();
 //tool_platform(1);
-three_drivers();
+//three_drivers();
+whole_thing();
 
 //plywood_parts();
 //projection(cut=true) plywood_parts();
