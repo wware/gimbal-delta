@@ -293,16 +293,20 @@ module plywood_parts() {
 }
 
 module three_drivers() {
-    L = 750;
+    L = 60 * 25.4;
+    gap = 7*25.4;
     for (i = [0 : 2])
         rotate((60+120*i), [0, 0, 1])
-            translate([0, -400, 0])
+            // 300 = height of plywood_driver_base
+            translate([0, -L/sqrt(3) + 400, 0])
                 //driver_module();
                 plywood_driver_base();
         %for (i = [0 : 2])
             rotate(120*i, [0, 0, 1])
-                translate([-L/2, -450, -6 - 2*25.4])
-                    cube([L, 4*25.4, 2*25.4]);
+                /*translate([-L/2, -450, -6 - 2*25.4])
+                    cube([L, 4*25.4, 2*25.4]);*/
+                translate([-L/2+gap/2, -0.5*L/sqrt(3)-50, -6 - 2*25.4])
+                    cube([L-gap, 4*25.4, 2*25.4]);
 }
 
 //full_rotor();
@@ -312,10 +316,10 @@ module three_drivers() {
 //tensioner_belt_follower();
 //tensioner_pieces();
 //tool_platform(1);
-//three_drivers();
+three_drivers();
 
 //plywood_parts();
-projection(cut=true) plywood_parts();
+//projection(cut=true) plywood_parts();
 
 // https://gist.github.com/wware/875998248c23ebd86668fd5c354ec737
 // I wish this were a real programming language.
