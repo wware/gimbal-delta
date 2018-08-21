@@ -294,7 +294,7 @@ module plywood_parts() {
 
 module three_drivers() {
     L = 60 * 25.4;
-    gap = 7*25.4;
+    gap = 180;
     for (i = [0 : 2])
         rotate((60+120*i), [0, 0, 1])
             translate([0, -L/sqrt(3) + 400, 0])
@@ -307,10 +307,35 @@ module three_drivers() {
                     cube([L-gap, 4*25.4, 2*25.4]);
 }
 
+module threaded_rod(offset, direc, length) {
+    xcomp = direc[0];
+    ycomp = direc[1];
+    zcomp = direc[2];
+    crossLength = sqrt(xcomp * xcomp + ycomp * ycomp);
+    theta = atan2(crossLength, zcomp);
+    translate(offset)
+        rotate(theta, [-ycomp, xcomp, 0])
+            cylinder(h=length, d=0.25*25.4);
+}
+
 module whole_thing() {
+    slope = [0, 12.6, 30];
     translate([0, 0, 30*25.4])
         three_drivers();
     tool_platform(0);
+    %for (i = [0 : 2])
+        rotate(120*i, [0, 0, 1]) {
+            threaded_rod(
+                [0.5*lazy_susan_separation, 140, 0],
+                slope,
+                48 * 25.4
+            );
+            threaded_rod(
+                [-0.5*lazy_susan_separation, 140, 0],
+                slope,
+                48 * 25.4
+            );
+        }
 }
 
 
