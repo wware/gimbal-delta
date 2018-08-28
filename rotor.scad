@@ -299,7 +299,7 @@ module three_drivers() {
         rotate((60+120*i), [0, 0, 1])
             translate([0, -L/sqrt(3) + 400, 0])
                 plywood_driver_base();
-        %for (i = [0 : 2])
+        for (i = [0 : 2])
             rotate(120*i, [0, 0, 1])
                 translate([-L/2+gap/2,
                            -0.5*L/sqrt(3)-50,
@@ -323,7 +323,7 @@ module whole_thing() {
     translate([0, 0, 30*25.4])
         three_drivers();
     tool_platform(0);
-    %for (i = [0 : 2])
+    for (i = [0 : 2])
         rotate(120*i, [0, 0, 1]) {
             threaded_rod(
                 [0.5*lazy_susan_separation, 140, 0],
