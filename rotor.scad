@@ -292,14 +292,19 @@ module plywood_parts() {
     }
 }
 
+gap = 180;   // purely empirical?
+
+// minimum stick length is 52.3 inches, else drivers overlap
+// stick_length = 48 + (gap/25.4);
+stick_length = 60 + (gap/25.4);    // 60-inch long 2x4
+
 module three_drivers() {
-    L = 60 * 25.4;
-    gap = 180;
+    L = stick_length * 25.4;
     for (i = [0 : 2])
         rotate((60+120*i), [0, 0, 1])
             translate([0, -L/sqrt(3) + 400, 0])
                 plywood_driver_base();
-        for (i = [0 : 2])
+        %for (i = [0 : 2])
             rotate(120*i, [0, 0, 1])
                 translate([-L/2+gap/2,
                            -0.5*L/sqrt(3)-50,
@@ -319,7 +324,8 @@ module threaded_rod(offset, direc, length) {
 }
 
 module whole_thing() {
-    slope = [0, 12.6, 30];
+    ydelta = stick_length / sqrt(3) - 22;
+    slope = [0, ydelta, 30];
     translate([0, 0, 30*25.4])
         three_drivers();
     tool_platform(0);
