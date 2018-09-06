@@ -1,5 +1,7 @@
 # Gimbal delta printer/CNC
 
+![Picture of gadget](https://raw.githubusercontent.com/wware/gimbal-delta/master/almost_complete.jpg)
+
 The fundamental part of the gimbal delta printer is a
 [2-axis gimbal](https://github.com/wware/gimbal-delta/blob/master/gimbal1.stl)
 holding a nut that takes a 1/4"-20 threaded rod. Each gimbal nut requires
