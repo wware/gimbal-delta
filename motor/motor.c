@@ -67,14 +67,14 @@ int run_motors(int avalue, int bvalue, int cvalue, int usecs, int enable_debug)
 #define N 10000
 
     for (iter = 0; iter < usecs; iter++) {
-        if (enable_debug)
-            printf("%d\n", iter);
         aphase += avalue;
         bphase += bvalue;
         cphase += cvalue;
         go_a = (aphase > N);
         go_b = (bphase > N);
         go_c = (cphase > N);
+        if (enable_debug)
+            printf("%d %d %d %d\n", iter, aphase, bphase, cphase);
         if (go_a) bcm2835_gpio_write(PULA, HIGH);
         if (go_b) bcm2835_gpio_write(PULB, HIGH);
         if (go_c) bcm2835_gpio_write(PULC, HIGH);
@@ -83,9 +83,9 @@ int run_motors(int avalue, int bvalue, int cvalue, int usecs, int enable_debug)
         if (go_b) bcm2835_gpio_write(PULB, LOW);
         if (go_c) bcm2835_gpio_write(PULC, LOW);
         nanosleep(&ts, (struct timespec *)NULL);
-        aphase %= N;
-        bphase %= N;
-        cphase %= N;
+        if (go_a) aphase %= N;
+        if (go_b) bphase %= N;
+        if (go_c) cphase %= N;
     }
 
     return 0;

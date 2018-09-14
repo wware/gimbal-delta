@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import argparse
 import os
 from ctypes import *
@@ -9,12 +11,24 @@ parser = argparse.ArgumentParser(
     description=__doc__
 )
 
+parser.add_argument('-a',
+    type=int, default=0,
+    help='motor A',
+)
+parser.add_argument('-b',
+    type=int, default=0,
+    help='motor A',
+)
+parser.add_argument('-c',
+    type=int, default=0,
+    help='motor A',
+)
 parser.add_argument('--debug', '-d',
     action='store_true',
     help='turn on debug-level debugging output',
 )
 parser.add_argument('--duration', '-D',
-	type=int, default=300,
+    type=int, default=300,
     help='turn on debug-level debugging output',
 )
 opts = parser.parse_args()
@@ -22,4 +36,4 @@ opts = parser.parse_args()
 
 os.system("make motor.so")
 lib = cdll.LoadLibrary("./motor.so")
-lib.run_motors(300, 600, 1200, opts.duration, 1 if opts.debug else 0)
+lib.run_motors(opts.a, opts.b, opts.c, opts.duration, 1 if opts.debug else 0)
