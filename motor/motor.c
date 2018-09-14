@@ -88,6 +88,10 @@ int run_motors(int avalue, int bvalue, int cvalue, int usecs, int enable_debug)
         if (go_c) cphase %= N;
     }
 
+    bcm2835_gpio_write(ENAA, LOW);
+    bcm2835_gpio_write(ENAB, LOW);
+    bcm2835_gpio_write(ENAC, LOW);
+
     return 0;
 }
 
