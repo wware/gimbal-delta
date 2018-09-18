@@ -30,7 +30,7 @@ int run_motors(int avalue, int bvalue, int cvalue, int usecs, int enable_debug)
     struct timespec ts = {0};
 
     ts.tv_sec = 0;
-    ts.tv_nsec = 1000L;   // one microsecond per loop iteration
+    ts.tv_nsec = 100L;   // 0.1 microsecond per loop iteration
 
     // If you call this, it will not actually access the GPIO
     // Use for testing
