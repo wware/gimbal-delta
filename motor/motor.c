@@ -23,17 +23,39 @@
 #define MAX(x,y)  (((x) > (y)) ? (x) : (y))
 #define ABS(x)    MAX(x, -(x))
 
+#define MODULO   100000
+
+// PERIOD is in nanoseconds
+#define PERIOD   100000L
+
+struct pinstruct {
+    int phase;
+    int state;
+    int pin;
+};
+
+static struct pinstruct astruct = { 0, 0, PULA };
+static struct pinstruct bstruct = { 0, 0, PULB };
+static struct pinstruct cstruct = { 0, 0, PULC };
+
+void process_pin(struct pinstruct *pstr, int value)
+{
+    pstr->phase += value;
+    if (pstr->phase > MODULO) {
+        bcm2835_gpio_write(pstr->pin, pstr->state ? HIGH : LOW);
+        pstr->state = !pstr->state;
+        pstr->phase %= MODULO;
+    }
+}
+
 int run_motors(int avalue, int bvalue, int cvalue, int usecs, int enable_debug)
 {
-    int iter, aphase = 0, bphase = 0, cphase = 0;
-    int go_a, go_b, go_c;
+    int iter;
     struct timespec ts = {0};
 
     ts.tv_sec = 0;
-    ts.tv_nsec = 100L;   // 0.1 microsecond per loop iteration
+    ts.tv_nsec = PERIOD;
 
-    // If you call this, it will not actually access the GPIO
-    // Use for testing
     if (enable_debug)
         bcm2835_set_debug(1);
 
@@ -64,28 +86,13 @@ int run_motors(int avalue, int bvalue, int cvalue, int usecs, int enable_debug)
     bcm2835_gpio_write(DIRC, (cvalue < 0) ? HIGH : LOW);
     cvalue = ABS(cvalue);
 
-#define N 10000
-
     for (iter = 0; iter < usecs; iter++) {
-        aphase += avalue;
-        bphase += bvalue;
-        cphase += cvalue;
-        go_a = (aphase > N);
-        go_b = (bphase > N);
-        go_c = (cphase > N);
         if (enable_debug)
-            printf("%d %d %d %d\n", iter, aphase, bphase, cphase);
-        if (go_a) bcm2835_gpio_write(PULA, HIGH);
-        if (go_b) bcm2835_gpio_write(PULB, HIGH);
-        if (go_c) bcm2835_gpio_write(PULC, HIGH);
-        nanosleep(&ts, (struct timespec *)NULL);
-        if (go_a) bcm2835_gpio_write(PULA, LOW);
-        if (go_b) bcm2835_gpio_write(PULB, LOW);
-        if (go_c) bcm2835_gpio_write(PULC, LOW);
-        nanosleep(&ts, (struct timespec *)NULL);
-        if (go_a) aphase %= N;
-        if (go_b) bphase %= N;
-        if (go_c) cphase %= N;
+            printf("%d %d %d %d\n", iter, astruct.phase, bstruct.phase, cstruct.phase);
+	process_pin(&astruct, avalue);
+	process_pin(&bstruct, bvalue);
+	process_pin(&cstruct, cvalue);
+        nanosleep(&ts, (struct timespec *) NULL);
     }
 
     bcm2835_gpio_write(ENAA, LOW);
@@ -96,13 +103,26 @@ int run_motors(int avalue, int bvalue, int cvalue, int usecs, int enable_debug)
 }
 
 #ifdef MOTORMAIN
+const char *helpstring = "MODULO=%d PERIOD=%d\n"
+"  Example usage: %s -D 10000 -c 45000\n"
+"Command line options\n"
+"    -a <n>   rate multiple of the A motor, positive up, negative down\n"
+"    -b <n>   rate multiple of the B motor, positive up, negative down\n"
+"    -c <n>   rate multiple of the C motor, positive up, negative down\n"
+"    -D <n>   duration\n"
+"    -h,-?    help\n";
+
 int main(int argc, char **argv)
 {
     int c, debugflag = 0, duration = 300;
     int avalue = 0, bvalue = 0, cvalue = 0;
 
-    while ((c = getopt (argc, argv, "a:b:c:D:d")) != -1)
+    while ((c = getopt (argc, argv, "?ha:b:c:D:d")) != -1)
         switch (c) {
+            case 'h':
+            case '?':
+                printf(helpstring, MODULO, PERIOD, argv[0]);
+                return 0;
             case 'a':
                 avalue = atoi(optarg);
                 break;
