@@ -37,6 +37,7 @@ struct pinstruct {
 static struct pinstruct astruct = { 0, 0, PULA };
 static struct pinstruct bstruct = { 0, 0, PULB };
 static struct pinstruct cstruct = { 0, 0, PULC };
+static int init_done = 0;
 
 void process_pin(struct pinstruct *pstr, int value)
 {
@@ -59,8 +60,11 @@ int run_motors(int avalue, int bvalue, int cvalue, int usecs, int enable_debug)
     if (enable_debug)
         bcm2835_set_debug(1);
 
-    if (!bcm2835_init())
-        return 1;
+    if (!init_done) {
+        if (!bcm2835_init())
+            return 1;
+        init_done = 1;
+    }
 
     bcm2835_gpio_fsel(PULA, BCM2835_GPIO_FSEL_OUTP);
     bcm2835_gpio_fsel(DIRA, BCM2835_GPIO_FSEL_OUTP);

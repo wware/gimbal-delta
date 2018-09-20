@@ -1,0 +1,3 @@
+#!/bin/bash
+(cd /home/pi/gimbal-delta/motor; ./hack_inputs.py) &
+exit 0
