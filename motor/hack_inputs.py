@@ -25,7 +25,9 @@ funcdct = {
     'KEY_N': (0,      SPEED,  0,      DURATION, 0),
     'KEY_M': (0,      -SPEED, 0,      DURATION, 0),
     'KEY_G': (0,      0,      SPEED,  DURATION, 0),
-    'KEY_H': (0,      0,      -SPEED, DURATION, 0)
+    'KEY_H': (0,      0,      -SPEED, DURATION, 0),
+    'KEY_U': (SPEED,  SPEED,  SPEED,  DURATION, 0),
+    'KEY_I': (-SPEED, -SPEED, -SPEED, DURATION, 0)
 }
 
 while not done:
