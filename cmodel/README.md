@@ -26,15 +26,19 @@ The forward kinematics problem is to map (Da, Db, Dc) to the position of the too
 To solve the forward kinematics problem, we need to specify (Da, Db, Dc) and then find the vector X representing the intersection of three spheres. This is a solved problem, discussed [here](https://stackoverflow.com/questions/1406375) and [here](https://gis.stackexchange.com/questions/66). Given the function defined in the last Stack Overflow answer, we can write
 
     x, y, z = trilaterate(A, B, C, La + Da, Lb + Db, Lc + Dc)
+    # or, with more uniform vector notation
+    X = trilaterate(A, B, C, L + D)
 
 where the definition of `trilaterate` is given in `hack.py` in this directory. Gee, that was easier than I expected. OK, on to formulating the least-squares method.
 
 ## Dealing with unknowns and their consequent errors
 
-Recognize that the values we have for A, B, C, La, Lb, Lc are approximations (known but not quite correct) of the real values (correct but unknown). So we have *our* answer and *the right* answer. `F` is the function whose input is the controls and parameters, and whose output is the tooltip position.
+Recognize that the values we have for A, B, C, La, Lb, Lc are approximations (known but not quite correct) of the real values (correct but unknown).
 
-    X~ = F(Da, Db, Dc, A~, B~, C~, La~, Lb~, Lc~)     # estimated parameters, known but approximate
-    X = F(Da, Db, Dc, A, B, C, La, Lb, Lc)            # real paramaters, unknown but correct
+    X~ = trilaterate(A~, B~, C~, L~ + D)       # estimated parameters, known but approximate
+    X = trilaterate(A, B, C, L + D)            # real paramaters, unknown but correct
+
+Our goal is to update the estimated parameters so that for any given D value, our estimate of the tooltip position `X~` matches the real `X` vector.
 
 So set up a square error figure, summed over several datapoints. Each datapoint starts with the control point `D` (that is, Da, Db, Dc) and is mapped by `F` (along with parameters) to the `X` (or `X~`) vector.
 
@@ -43,4 +47,4 @@ So set up a square error figure, summed over several datapoints. Each datapoint 
 
 One can now construct a 12-dimensional vector of partial derivatives defined for any point in the twelve-space `A, B, C, La, Lb, Lc` of parameters. We want to find the point in 12-space where all twelve partial derivatives are zero, indicating a minimum square error.
 
-It won't be practical to find a closed form for `dX/dparam`, so I'll need to iterate a [Newton's method](https://en.wikipedia.org/wiki/Newton%27s_method) or [gradient descent](https://en.wikipedia.org/wiki/Gradient_descent) or whatever to solve this.
+Because the `trilaterate` function is so copmliczted, it won't be practical to find a closed form for `dE/dparam`. I'll need to iterate a [Newton's method](https://en.wikipedia.org/wiki/Newton%27s_method) or [gradient descent](https://en.wikipedia.org/wiki/Gradient_descent) or whatever to solve this.
